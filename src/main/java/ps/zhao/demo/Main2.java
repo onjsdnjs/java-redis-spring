@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
@@ -19,37 +20,13 @@ import java.util.stream.IntStream;
 
 @Component
 @Slf4j
+@Order(2)
 public class Main2 implements CommandLineRunner {
-
-    @Value(value = "${redis.host}")
-    private String host = null;
-    @Value(value = "${redis.port}")
-    private int port = 0;
-    @Value(value = "${redis.password}")
-    private String password = null;
 
     @Autowired
     @Qualifier("rt")
     private RedisTemplate redisTemplate = null;
 
-    @Bean(name = "rt")
-    public RedisTemplate<String, Object> redisTemplate(JedisConnectionFactory connectionFactory) {
-        RedisTemplate<String, Object> template = new RedisTemplate();
-        template.setConnectionFactory(connectionFactory);
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
-        return template;
-    }
-
-    @Bean
-    public JedisConnectionFactory connectionFactory() {
-        JedisConnectionFactory factory = new JedisConnectionFactory();
-        factory.setHostName(host);
-        factory.setPort(port);
-        factory.setPassword(password);
-        factory.setTimeout(3000);
-        return factory;
-    }
 
     /**
      * redis中的保存结果为
@@ -66,7 +43,7 @@ public class Main2 implements CommandLineRunner {
         Person person = (Person) redisTemplate.opsForValue().get("person");
         log.debug("get name from redis: {}", person.toString());
 
-        System.exit(0);
+//        System.exit(0);
 
     }
 
@@ -88,7 +65,7 @@ public class Main2 implements CommandLineRunner {
         List<Person> getPersonList = (List<Person>) redisTemplate.opsForValue().get("person_list");
         log.debug("get person list from redis, size is: {}", getPersonList.size());
 
-        System.exit(0);
+//        System.exit(0);
 
     }
 
